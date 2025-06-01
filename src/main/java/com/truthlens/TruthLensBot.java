@@ -7,8 +7,8 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 public class TruthLensBot {
     public static void main(String[] args) {
         try {
-            String botToken = "8140995207:AAFsiOpulbxmBysC5RqB3eoBwU6RJBmoca4";
-            String botUsername = "TruthLensBot";
+            String botToken = "YOUR_BOT_TOKEN";
+            String botUsername = "YOUR_BOT_USERNAME";
 
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
             botsApi.registerBot(new Bot(botToken, botUsername));
