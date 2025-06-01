@@ -1,0 +1,6 @@
+com\truthlens\PredictionResult.class
+com\truthlens\FakeNewsDetector.class
+com\truthlens\TruthLensBot.class
+com\truthlens\Bot.class
+com\truthlens\Bot$PendingReport.class
+com\truthlens\Bot$1.class
