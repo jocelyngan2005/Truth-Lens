@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.sql.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Bot extends TelegramLongPollingBot {
     private final String botToken;
@@ -36,6 +38,7 @@ public class Bot extends TelegramLongPollingBot {
     private final Map<Long, PendingReport> pendingReports = new ConcurrentHashMap<>();
     private final Map<Long, String> pendingLanguage = new ConcurrentHashMap<>();
     private final Connection dbConnection;
+    private Map<Long, Timer> feedbackTimers = new ConcurrentHashMap<>();
 
     private static class PendingReport {
         final String contentHash;
@@ -435,6 +438,15 @@ public class Bot extends TelegramLongPollingBot {
             
             // Remove the pending report
             pendingReports.remove(chatId);
+
+            // Cancel any existing timer
+            Timer existingTimer = feedbackTimers.remove(chatId);
+            if (existingTimer != null) {
+                existingTimer.cancel();
+            }
+
+            // Show language selection buttons after report submission
+            showLanguageSelectionButtons(chatId);
         }
     }
 
@@ -467,14 +479,18 @@ public class Bot extends TelegramLongPollingBot {
         String feedbackMessage;
         switch (action) {
             case "like":
-                feedbackMessage = "👍 Thank you for your feedback! This helps improve our model.";
+                feedbackMessage = "👍 Thank you for your feedback! We're glad the prediction was helpful.";
                 sendMessage(chatId, feedbackMessage);
                 storeFeedback(contentHash, "like", isFake, null, null);
+                // Show language selection after like feedback
+                showLanguageSelectionButtons(chatId);
                 break;
             case "dislike":
                 feedbackMessage = "👎 Thank you for your feedback! We'll use this to improve our predictions.";
                 sendMessage(chatId, feedbackMessage);
                 storeFeedback(contentHash, "dislike", isFake, null, null);
+                // Show language selection after dislike feedback
+                showLanguageSelectionButtons(chatId);
                 break;
             case "report":
                 // Store the report context and ask for reason
@@ -489,6 +505,12 @@ public class Bot extends TelegramLongPollingBot {
                 break;
             default:
                 return;
+        }
+
+        // Cancel any existing timer for this chat
+        Timer existingTimer = feedbackTimers.remove(chatId);
+        if (existingTimer != null) {
+            existingTimer.cancel();
         }
     }
 
@@ -517,6 +539,51 @@ public class Bot extends TelegramLongPollingBot {
 
         try {
             execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+
+        // Start a timer to show language buttons after 60 seconds if no feedback
+        // Only start the timer if there isn't already a pending report
+        if (!pendingReports.containsKey(chatId)) {
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    showLanguageSelectionButtons(chatId);
+                }
+            }, 60000); // 60 seconds
+            feedbackTimers.put(chatId, timer);
+        }
+    }
+
+    private void showLanguageSelectionButtons(long chatId) {
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+        List<InlineKeyboardButton> row = new ArrayList<>();
+
+        // English button
+        InlineKeyboardButton englishButton = new InlineKeyboardButton();
+        englishButton.setText("🇬🇧 English");
+        englishButton.setCallbackData("lang:en:0");
+        row.add(englishButton);
+
+        // Malay button
+        InlineKeyboardButton malayButton = new InlineKeyboardButton();
+        malayButton.setText("🇲🇾 Malay");
+        malayButton.setCallbackData("lang:ms:0");
+        row.add(malayButton);
+
+        keyboard.add(row);
+        markup.setKeyboard(keyboard);
+
+        SendMessage languageMessage = new SendMessage();
+        languageMessage.setChatId(chatId);
+        languageMessage.setText("🌐 Please select your preferred language for the next analysis:");
+        languageMessage.setReplyMarkup(markup);
+
+        try {
+            execute(languageMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
