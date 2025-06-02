@@ -525,7 +525,7 @@ public class Bot extends TelegramLongPollingBot {
             "Confidence: %.2f%%\n\n" +
             "Was this prediction helpful?",
             content,
-            isFake ? "❌ Likely Fake" : "✅ Likely Real",
+            isFake ? "✅ Likely Real" : "❌ Likely Fake",
             confidence * 100
         );
 
