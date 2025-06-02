@@ -1,6 +1,6 @@
 # Truth-Lens 🤖
 
-Truth-Lens is an AI-Powered Telegram bot that helps users identify and verify potentially fake news content. Using advanced machine learning technology, it analyzes news articles, text, and PDF documents to detect misinformation and provide users with confidence scores for each analysis.
+Truth-Lens is an AI-Powered platform that helps users identify and verify potentially fake news content. It's available both as a Telegram bot and a web application. Using advanced machine learning technology, it analyzes news articles, text, and PDF documents to detect misinformation and provide users with confidence scores for each analysis.
 
 ## Features 🌟
 
@@ -10,16 +10,19 @@ Truth-Lens is an AI-Powered Telegram bot that helps users identify and verify po
 - **User Feedback System**: Collects user feedback to improve accuracy
 - **Report System**: Allows users to report misclassified content
 - **Confidence Scoring**: Provides confidence levels for each prediction
+- **Multiple Platforms**: Available as both Telegram bot and web application
 
 ## Technical Stack 🛠
 
-- **Backend**: Java (Telegram Bot API)
-- **ML Service**: Python (Flask)
+- **Backend**: 
+  - Java (Telegram Bot API)
+  - Python (Flask for ML service)
+  - Streamlit (Web Application)
 - **ML Model**: DistilBERT for sequence classification
 - **Database**: SQLite for feedback storage
 - **Dependencies**:
   - Java: TelegramBots, Gson, SQLite JDBC
-  - Python: Flask, Transformers, PyTorch, BeautifulSoup4, PDFPlumber
+  - Python: Flask, Transformers, PyTorch, BeautifulSoup4, PDFPlumber, Streamlit
 
 ## Setup Instructions 📋
 
@@ -39,7 +42,8 @@ cd Truth-Lens
 
 2. Install Python dependencies:
 ```bash
-pip install -r src/main/python/requirements.txt
+pip install -r TELEGRAMBOT/src/main/python/requirements.txt
+pip install -r STREAMLIT/requirements.txt
 ```
 
 3. Build the Java project:
@@ -57,9 +61,10 @@ mvn clean install
 
 ### Running the Application
 
+#### Telegram Bot
 1. Start the Python ML service:
 ```bash
-python src/main/python/news_analyzer.py
+python TELEGRAMBOT/src/main/python/news_analyzer.py
 ```
 
 2. Start the Java bot:
@@ -67,8 +72,35 @@ python src/main/python/news_analyzer.py
 java -jar target/truth-lens-1.0-SNAPSHOT.jar
 ```
 
+#### Web Application (Streamlit)
+1. Navigate to the Streamlit directory:
+```bash
+cd STREAMLIT
+```
+
+2. Run the Streamlit app:
+```bash
+streamlit run app.py
+```
+
+3. Access the web application at `http://localhost:8501`
+
+### Deployment
+
+#### Telegram Bot
+- Deploy the Java bot to your preferred hosting service
+- Ensure the Python ML service is running and accessible
+
+#### Web Application
+- Deploy to Streamlit Cloud:
+  1. Create an account at [share.streamlit.io](https://share.streamlit.io)
+  2. Connect your GitHub repository
+  3. Deploy from the STREAMLIT directory
+  4. Get your HTTPS URL (e.g., `https://yourusername-truth-lens-app-xxxx.streamlit.app`)
+
 ## Usage Guide 📱
 
+### Telegram Bot
 1. Start a chat with your bot on Telegram
 2. Send `/start` to begin
 3. Choose your preferred language (English or Malay)
@@ -81,6 +113,20 @@ java -jar target/truth-lens-1.0-SNAPSHOT.jar
    - Prediction (Fake/Real)
    - Confidence score
    - Feedback options
+
+### Web Application
+1. Open the Streamlit web application
+2. Choose your input method:
+   - Text Input: Paste news article directly
+   - URL Input: Enter the news article URL
+   - PDF Upload: Upload a PDF document
+3. Click "Analyze" to get results
+4. View detailed analysis including:
+   - Fake/Real probability
+   - Confidence scores
+   - Analysis summary
+   - Recommendations
+5. Provide feedback on the prediction
 
 ## Feedback System 💬
 
@@ -100,4 +146,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgments 🙏
 
 - Telegram Bot API
-- All contributors and users of Truth-Lens
+- Streamlit
+- All future contributors and users of Truth-Lens
+- Contributors: 
+   - Jocelyn Gan Xin Yi
+   - Tan Yin June
+   - Cheah Pui Yan

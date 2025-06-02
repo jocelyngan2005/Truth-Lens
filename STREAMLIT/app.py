@@ -178,6 +178,49 @@ def analyze_text(text):
             verdict = f"Real ({real_score:.1%})"
             st.success(f"✅ This text appears to be legitimate news content (Confidence: {real_score:.1%})")
         
+        # Add detailed explanation section
+        st.markdown("### 📊 Analysis Summary")
+        
+        if fake_score > 0.7:
+            st.markdown("""
+            **Why this might be fake news:**
+            - The content shows strong indicators of misinformation
+            - The language patterns are consistent with known fake news characteristics
+            - The content may contain exaggerated claims or emotional manipulation
+            - The information may lack credible sources or verification
+            
+            **Recommendations:**
+            - Cross-reference with reliable news sources
+            - Check for official statements or press releases
+            - Verify the information with fact-checking websites
+            - Be cautious about sharing this content
+            """)
+        elif fake_score > 0.4:
+            st.markdown("""
+            **Potential concerns:**
+            - Some elements in the content raise questions about its authenticity
+            - The information may need additional verification
+            - There might be mixed signals in the content's credibility
+            
+            **Recommendations:**
+            - Verify the information with multiple sources
+            - Check for official confirmation
+            - Look for supporting evidence
+            - Exercise caution before sharing
+            """)
+        else:
+            st.markdown("""
+            **Why this appears to be legitimate:**
+            - The content shows characteristics of reliable news reporting
+            - The language patterns are consistent with factual reporting
+            - The information appears to be well-structured and verifiable
+            
+            **Still recommended:**
+            - Always verify information from multiple sources
+            - Check the publication date and source credibility
+            - Look for official statements or documentation
+            """)
+        
         # Show report options if fake news is detected
         if fake_score > 0.4:
             st.markdown("---")
@@ -187,11 +230,6 @@ def analyze_text(text):
         #st.markdown("---")
         #show_report_options()
         
-        # Add some explanation
-        st.markdown("""
-        
-        """)
-
         # Show feedback popup only after analysis
         st.session_state['show_feedback_popup'] = True
 
