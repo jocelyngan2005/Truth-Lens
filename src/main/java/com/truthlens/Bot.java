@@ -307,6 +307,9 @@ public class Bot extends TelegramLongPollingBot {
 
     private void analyzeContent(String text, long chatId, String language) {
         try {
+            // Send loading message
+            sendMessage(chatId, "🔍 Analyzing the content... Please wait.");
+            
             // Create request body
             JsonObject requestBody = new JsonObject();
             requestBody.addProperty("text", text);
